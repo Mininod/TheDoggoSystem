@@ -26,6 +26,7 @@ public class PlacePlanet : MonoBehaviour {
     private float SCALEMULTIPLYER = 500;
 
     protected bool editMode = false;
+    protected bool velocityMode = false;
 
     // Use this for initialization
     void Start () {
@@ -62,7 +63,6 @@ public class PlacePlanet : MonoBehaviour {
                     tapLocation = cam.GetComponent<Camera>().ScreenToWorldPoint(new Vector3((Input.GetTouch(0).position.x + Input.GetTouch(1).position.x) / 2, (Input.GetTouch(0).position.y + Input.GetTouch(1).position.y) / 2, 1));
                     UFO = Instantiate(planet, tapLocation, planet.transform.rotation);
                     editMode = true;
-                    UFO.GetComponent<Button>().onClick.AddListener(PlanetClick); 
                 }
                   
             }
@@ -80,27 +80,36 @@ public class PlacePlanet : MonoBehaviour {
            
         }
 
+        if (Input.touchCount == 1 && velocityMode == true)
+        {
+
+        }
+
     }
     
-    void PlanetClick()
-    {
-        
-       
-        
-    }
-
+    
     void VelocityButtonOnClick()
     {
         velocityButtonGameObject.SetActive(false);
-
+        velocityMode = true;
+        
 
     }
 
     void TickButtonOnClick()
     {
-        tickButtonGameObject.SetActive(false);
-        velocityButtonGameObject.SetActive(false);
-        editMode = false;
+        if (velocityMode == true)
+        {
+            velocityMode = false;
+            velocityButtonGameObject.SetActive(true);
+        }
+        else
+        {
+            tickButtonGameObject.SetActive(false);
+            velocityButtonGameObject.SetActive(false);
+            editMode = false;
+        }
+        
     }
 
 
