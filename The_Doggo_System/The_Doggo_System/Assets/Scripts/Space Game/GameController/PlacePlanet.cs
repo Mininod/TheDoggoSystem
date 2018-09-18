@@ -22,7 +22,6 @@ public class PlacePlanet : MonoBehaviour {
     private GameObject ghostPlanet;
 
     private float distance;
-    private float SCALEMULTIPLYER = 125;
 
     
     private GameObject velocityArrow;
@@ -32,6 +31,9 @@ public class PlacePlanet : MonoBehaviour {
 
     protected bool editMode = false;
     protected bool velocityMode = false;
+
+    private float coolDownTimer = 0;
+    private float MAXTIME = 1;
 
     // Use this for initialization
     void Start () {
@@ -49,50 +51,28 @@ public class PlacePlanet : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        coolDownTimer += 1 * Time.deltaTime;
 
-        if (Input.touchCount == 2 && velocityMode == false) 
+        if (Input.touchCount == 1 && velocityMode == false && !tickButtonGameObject.GetComponent<BoxCollider2D>().OverlapPoint(Input.GetTouch(0).position) && coolDownTimer > MAXTIME) //used to have && UFO!=null
         {
-            //PAUSE
-            if (Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(1).phase == TouchPhase.Ended)
+            if (editMode == false)
             {
+                tapLocation = Camera.main.ScreenToWorldPoint(new Vector3((Input.GetTouch(0).position.x), (Input.GetTouch(0).position.y), 1));
+                UFO = Instantiate(planet, tapLocation, planet.transform.rotation);
+                ufoRig = UFO.GetComponent<Rigidbody2D>();
+                editMode = true;
                 tickButtonGameObject.SetActive(true);
             }
 
-            if (Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(1).phase == TouchPhase.Began)
+            if (ghostPlanet != null)
             {
-                if (editMode == false)
-                {
-                    tapLocation = Camera.main.ScreenToWorldPoint(new Vector3((Input.GetTouch(0).position.x + Input.GetTouch(1).position.x) / 2, (Input.GetTouch(0).position.y + Input.GetTouch(1).position.y) / 2, 1));
-                    UFO = Instantiate(planet, tapLocation, planet.transform.rotation);
-                    ufoRig = UFO.GetComponent<Rigidbody2D>();
-                    editMode = true;
-                }
-                  
+                Destroy(ghostPlanet);
             }
 
-
-            if (Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(1).phase == TouchPhase.Moved)
-            {
-                
-                distance = Mathf.Sqrt(((Input.GetTouch(0).position.x - Input.GetTouch(1).position.x) * (Input.GetTouch(0).position.x - Input.GetTouch(1).position.x)) + ((Input.GetTouch(0).position.y - Input.GetTouch(1).position.y) * (Input.GetTouch(0).position.y - Input.GetTouch(1).position.y))); //The distance between both fingers 
-                UFO.GetComponent<Transform>().localScale = new Vector3(distance / SCALEMULTIPLYER, distance / SCALEMULTIPLYER, 1);
-            }
-
-            
-           
-           
-        }
-
-        if (Input.touchCount == 1 && velocityMode == false && UFO != null && !tickButtonGameObject.GetComponent<BoxCollider2D>().OverlapPoint(Input.GetTouch(0).position))
-        {
-                if(ghostPlanet != null)
-                {
-                    Destroy(ghostPlanet);
-                }
-                velocityMode = true;
-                Vector3 location = Camera.main.WorldToScreenPoint(new Vector3(UFO.transform.position.x, UFO.transform.position.y, UFO.transform.position.z));
-                velocityArrow = Instantiate(velocityArrowPreFab, location, velocityArrowPreFab.transform.rotation);
-                velocityArrow.transform.SetParent(canvasMain.transform);
+            velocityMode = true;
+            Vector3 location = Camera.main.WorldToScreenPoint(new Vector3(UFO.transform.position.x, UFO.transform.position.y, UFO.transform.position.z));
+            velocityArrow = Instantiate(velocityArrowPreFab, location, velocityArrowPreFab.transform.rotation);
+            velocityArrow.transform.SetParent(canvasMain.transform);
         }
         
         ///*************************************************WHAT YOU ARE WORKING ON NOW
@@ -137,7 +117,7 @@ public class PlacePlanet : MonoBehaviour {
         UFO.GetComponent<CircleCollider2D>().enabled = true;
         ufoRig.velocity = new Vector2(velocityMeasure.x, velocityMeasure.y);
         UFO = null;
-        
+        coolDownTimer = 0;
     }
 
 
