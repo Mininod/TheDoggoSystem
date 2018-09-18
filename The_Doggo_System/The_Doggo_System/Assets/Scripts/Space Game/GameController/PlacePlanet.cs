@@ -5,18 +5,13 @@ using UnityEngine.UI;
 
 public class PlacePlanet : MonoBehaviour {
 
-    //DEbug
-    public GameObject textGameobject;
-    private Text debugText;
-    public GameObject textGameobject2;
-    private Text debugText2;
-
-    public GameObject planet;
-  
+   
 
     public GameObject canvasMain;
- 
+    public GameObject planet;
     public GameObject tickButtonGameObject;
+    public GameObject velocityArrowPreFab;
+
     private Button tickButton;
   
     
@@ -29,7 +24,7 @@ public class PlacePlanet : MonoBehaviour {
     private float distance;
     private float SCALEMULTIPLYER = 125;
 
-    public GameObject velocityArrowPreFab;
+    
     private GameObject velocityArrow;
     private Vector2 velocityMeasure;
 
@@ -40,13 +35,7 @@ public class PlacePlanet : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-
-        //debug
-        debugText = textGameobject.GetComponent<Text>();
-        debugText2 = textGameobject2.GetComponent<Text>();
-        string thing = "0";
-        debugText.text = thing;
-        debugText2.text = thing;
+        
 
         
         tickButton = tickButtonGameObject.GetComponent<Button>();
@@ -86,7 +75,6 @@ public class PlacePlanet : MonoBehaviour {
             {
                 
                 distance = Mathf.Sqrt(((Input.GetTouch(0).position.x - Input.GetTouch(1).position.x) * (Input.GetTouch(0).position.x - Input.GetTouch(1).position.x)) + ((Input.GetTouch(0).position.y - Input.GetTouch(1).position.y) * (Input.GetTouch(0).position.y - Input.GetTouch(1).position.y))); //The distance between both fingers 
-                //debugText.text = distance.ToString();
                 UFO.GetComponent<Transform>().localScale = new Vector3(distance / SCALEMULTIPLYER, distance / SCALEMULTIPLYER, 1);
             }
 
@@ -117,16 +105,14 @@ public class PlacePlanet : MonoBehaviour {
             velocityArrow.transform.eulerAngles = new Vector3(0, 0, angle+90);
             velocityMeasure = new Vector2(UFO.transform.position.x - inputWorldPoint.x, UFO.transform.position.y - inputWorldPoint.y);
             
-            
-
-            debugText.text = velocityMeasure.x.ToString();
-            debugText2.text = velocityMeasure.y.ToString();
 
             if(Input.GetTouch(0).phase == TouchPhase.Ended)
             {
                 velocityMode = false;                               //Out of velocity
                 Destroy(velocityArrow);
                 ghostPlanet = Instantiate(planet, UFO.transform.position, planet.transform.rotation);
+                ghostPlanet.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+                
                 ghostPlanet.GetComponent<Rigidbody2D>().velocity = new Vector2(velocityMeasure.x, velocityMeasure.y);
                 ghostPlanet.GetComponent<CircleCollider2D>().isTrigger = true;
                 ghostPlanet.GetComponent<CircleCollider2D>().enabled = true;
