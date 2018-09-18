@@ -72,7 +72,7 @@ public class PlacePlanet : MonoBehaviour {
             if (Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(0).phase == TouchPhase.Moved)
             {
                 
-                distance = Mathf.Sqrt(((Input.GetTouch(0).position.x - Input.GetTouch(1).position.x) * (Input.GetTouch(0).position.y - Input.GetTouch(1).position.y)) + ((Input.GetTouch(0).position.y - Input.GetTouch(1).position.y) * (Input.GetTouch(0).position.y - Input.GetTouch(1).position.y))); //The distance between both fingers 
+                distance = Mathf.Sqrt(((Input.GetTouch(0).position.x - Input.GetTouch(1).position.x) * (Input.GetTouch(0).position.x - Input.GetTouch(1).position.x)) + ((Input.GetTouch(0).position.y - Input.GetTouch(1).position.y) * (Input.GetTouch(0).position.y - Input.GetTouch(1).position.y))); //The distance between both fingers 
                 //debugText.text = distance.ToString();
                 UFO.GetComponent<Transform>().localScale = new Vector3(distance / SCALEMULTIPLYER, distance / SCALEMULTIPLYER, 1);
             }
@@ -85,11 +85,12 @@ public class PlacePlanet : MonoBehaviour {
         if (Input.touchCount == 1 && velocityMode == true)
         {
             //Velocity mode On, start
-            //float fingerToArrowPosition = Vector2.Angle(Input.GetTouch(0).position, UFO.transform.position);
             Vector2 inputWorldPoint = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
             float angle = Mathf.Atan2(inputWorldPoint.y - UFO.transform.position.y, inputWorldPoint.x - UFO.transform.position.x) * 180 / Mathf.PI;
-            debugText.text = angle.ToString();
             velocityArrow.transform.eulerAngles = new Vector3(0, 0, angle+90);
+           // distance = Mathf.Sqrt(((Input.GetTouch(0).position.x - UFO.transform.position.x) * (Input.GetTouch(0).position.y - UFO.transform.position.y)) + ((Input.GetTouch(0).position.y - Input.GetTouch(1).position.y) * (Input.GetTouch(0).position.y - Input.GetTouch(1).position.y))); //The distance between both fingers 
+
+           // debugText.text = 
         }
 
     }
@@ -116,6 +117,7 @@ public class PlacePlanet : MonoBehaviour {
             tickButtonGameObject.SetActive(false);          //
             velocityButtonGameObject.SetActive(false);      //  Out of Edit mode
             editMode = false;                               //
+            UFO.GetComponent<CircleCollider2D>().enabled = true;
         }
         
     }
