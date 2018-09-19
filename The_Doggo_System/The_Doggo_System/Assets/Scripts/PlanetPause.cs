@@ -22,14 +22,26 @@ public class PlanetPause : MonoBehaviour {
             if(!m_isObjCurrentlyPaused)
             {
                 m_currentVelocity = gameObject.GetComponent<Rigidbody2D>().velocity;
-                gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+                gameObject.GetComponent<CircleCollider2D>().enabled = false;
+                gameObject.GetComponent<MassController>().enabled = false;
                 m_isObjCurrentlyPaused = true;
             }
+            gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
         }
         else if(m_isObjCurrentlyPaused && !isGamePaused)
         {
             gameObject.GetComponent<Rigidbody2D>().velocity = m_currentVelocity;
+            gameObject.GetComponent<CircleCollider2D>().enabled = true;
+            gameObject.GetComponent<MassController>().enabled = true;
             m_isObjCurrentlyPaused = false;
         }
 	}
+
+    public void SetVelocity(Vector3 m_velocity)
+    {
+        m_currentVelocity = m_velocity;
+        gameObject.GetComponent<CircleCollider2D>().enabled = false;
+        gameObject.GetComponent<MassController>().enabled = false;
+
+    }
 }

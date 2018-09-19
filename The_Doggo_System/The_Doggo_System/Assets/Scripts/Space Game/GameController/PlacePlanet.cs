@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class PlacePlanet : MonoBehaviour {
 
-   
+
+    public List<GameObject> allThePlanets = new List<GameObject>();
 
     public GameObject canvasMain;
     public GameObject planet;
-    public GameObject tickButtonGameObject;
     public GameObject velocityArrowPreFab;
 
+    public GameObject tickButtonGameObject;
     private Button tickButton;
+    public GameObject pauseButtonGameObject;
+    private Button pauseButton;
   
     
     private Vector3 tapLocation;
@@ -31,21 +35,20 @@ public class PlacePlanet : MonoBehaviour {
 
     protected bool editMode = false;
     protected bool velocityMode = false;
+    public bool isPaused = false;
 
     private float coolDownTimer = 0;
     private float MAXTIME = 1;
 
     // Use this for initialization
     void Start () {
-        
-
-        
-        tickButton = tickButtonGameObject.GetComponent<Button>();
-        
-        tickButton.onClick.AddListener(TickButtonOnClick);
        
+        tickButton = tickButtonGameObject.GetComponent<Button>();
+        tickButton.onClick.AddListener(TickButtonOnClick);
         tickButtonGameObject.SetActive(false);
 
+        pauseButton = pauseButtonGameObject.GetComponent<Button>();
+        pauseButton.onClick.AddListener(PauseButtonOnClick);
 
 	}
 	
@@ -53,15 +56,17 @@ public class PlacePlanet : MonoBehaviour {
 	void Update () {
         coolDownTimer += 1 * Time.deltaTime;
 
-        if (Input.touchCount == 1 && velocityMode == false && !tickButtonGameObject.GetComponent<BoxCollider2D>().OverlapPoint(Input.GetTouch(0).position) && coolDownTimer > MAXTIME) //used to have && UFO!=null
+        if (Input.touchCount == 1 && velocityMode == false && isPaused == true && !tickButtonGameObject.GetComponent<BoxCollider2D>().OverlapPoint(Input.GetTouch(0).position) && !pauseButtonGameObject.GetComponent<BoxCollider2D>().OverlapPoint(Input.GetTouch(0).position) && coolDownTimer > MAXTIME) 
         {
             if (editMode == false)
             {
                 tapLocation = Camera.main.ScreenToWorldPoint(new Vector3((Input.GetTouch(0).position.x), (Input.GetTouch(0).position.y), 1));
                 UFO = Instantiate(planet, tapLocation, planet.transform.rotation);
                 ufoRig = UFO.GetComponent<Rigidbody2D>();
+                allThePlanets.Add(UFO); 
                 editMode = true;
                 tickButtonGameObject.SetActive(true);
+                pauseButtonGameObject.SetActive(false);
             }
 
             if (ghostPlanet != null)
@@ -96,6 +101,7 @@ public class PlacePlanet : MonoBehaviour {
                 ghostPlanet.GetComponent<Rigidbody2D>().velocity = new Vector2(velocityMeasure.x, velocityMeasure.y);
                 ghostPlanet.GetComponent<CircleCollider2D>().isTrigger = true;
                 ghostPlanet.GetComponent<CircleCollider2D>().enabled = true;
+                ghostPlanet.GetComponent<PlanetPause>().isGamePaused = false;
             }
            
         }
@@ -107,17 +113,31 @@ public class PlacePlanet : MonoBehaviour {
 
     void TickButtonOnClick()
     {
+       
         if (ghostPlanet != null)
         {
             Destroy(ghostPlanet);
         }
+        //UFO.GetComponent<PlanetPause>().isGamePaused = false;
+       // isPaused = false;
         velocityMode = false;
-        tickButtonGameObject.SetActive(false);          
+        tickButtonGameObject.SetActive(false);
+        pauseButtonGameObject.SetActive(true);
         editMode = false;                               
         UFO.GetComponent<CircleCollider2D>().enabled = true;
-        ufoRig.velocity = new Vector2(velocityMeasure.x, velocityMeasure.y);
+        UFO.GetComponent<MassController>().enabled = true;
+        UFO.GetComponent<PlanetPause>().SetVelocity(new Vector3(velocityMeasure.x, velocityMeasure.y, 0));
         UFO = null;
         coolDownTimer = 0;
+    }
+
+    void PauseButtonOnClick()
+    {
+        isPaused = !isPaused;
+        for(int i = 0; i < allThePlanets.Count; i++)
+        {
+            allThePlanets[i].GetComponent<PlanetPause>().isGamePaused = !allThePlanets[i].GetComponent<PlanetPause>().isGamePaused;
+        }
     }
 
 

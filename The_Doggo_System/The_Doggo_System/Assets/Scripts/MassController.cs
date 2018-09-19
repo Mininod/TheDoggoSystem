@@ -5,14 +5,15 @@ using UnityEngine;
 public class MassController : MonoBehaviour {
 
     public float startingMass;
-    public GameObject sun;
-    private float m_Mass;
+    private GameObject sun;
+    internal float m_Mass;
     private int m_scaleTime;
     private float m_sunDistanceMultiplier;
 
     // Use this for initialization
     void Start () {
         gameObject.transform.localScale = new Vector3(startingMass, startingMass, 1);
+        sun = GameObject.Find("Sun");
 	}
 	
 	// Update is called once per frame
@@ -24,7 +25,7 @@ public class MassController : MonoBehaviour {
         {
             m_scaleTime = 10; // hard value
 
-            m_Mass += 0.1f / m_sunDistanceMultiplier;
+            m_Mass += 0.01f / m_sunDistanceMultiplier;
 
             gameObject.transform.localScale += new Vector3(m_Mass, m_Mass, 0);
 
