@@ -8,6 +8,7 @@ public class PlacePlanet : MonoBehaviour {
 
 
     public List<GameObject> allThePlanets = new List<GameObject>();
+    private int planetsInactive = 0;
 
     public GameObject canvasMain;
     public GameObject planet;
@@ -17,13 +18,16 @@ public class PlacePlanet : MonoBehaviour {
     private Button tickButton;
     public GameObject pauseButtonGameObject;
     private Button pauseButton;
-  
+    public Sprite pauseButtonSprite;
+    public Sprite playButtonSprite;
+
+    
     
     private Vector3 tapLocation;
 
-    private GameObject UFO;
-    private Rigidbody2D ufoRig;
+    private GameObject newPlanet;
     private GameObject ghostPlanet;
+    public GameObject selectedPlanet;
 
     private float distance;
 
@@ -38,7 +42,11 @@ public class PlacePlanet : MonoBehaviour {
     public bool isPaused = false;
 
     private float coolDownTimer = 0;
-    private float MAXTIME = 1;
+    private float MAXTIME = 0.5f;
+
+
+    //test
+    public GameObject testplanet;
 
     // Use this for initialization
     void Start () {
@@ -50,20 +58,60 @@ public class PlacePlanet : MonoBehaviour {
         pauseButton = pauseButtonGameObject.GetComponent<Button>();
         pauseButton.onClick.AddListener(PauseButtonOnClick);
 
+        allThePlanets.Add(testplanet);
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
         coolDownTimer += 1 * Time.deltaTime;
 
+        for (int i = 0; i < allThePlanets.Count; i++)
+        {
+            if(allThePlanets[i].activeInHierarchy == false)
+            {
+                planetsInactive += 1;
+            }
+        }
+
+        if(allThePlanets.Count == planetsInactive)
+        {
+            Debug.Log("All the planets: " + allThePlanets.Count);
+            Debug.Log("Planets inactive");
+            Lose();
+        }
+        else
+        {
+            planetsInactive = 0;
+        }
+
+
+            //If you are using 1 finger while your not in velocity mode, and while the game is paused, and not touching any of the buttons and the cooldown timer is not done yet
+
+
         if (Input.touchCount == 1 && velocityMode == false && isPaused == true && !tickButtonGameObject.GetComponent<BoxCollider2D>().OverlapPoint(Input.GetTouch(0).position) && !pauseButtonGameObject.GetComponent<BoxCollider2D>().OverlapPoint(Input.GetTouch(0).position) && coolDownTimer > MAXTIME) 
         {
-            if (editMode == false)
+            for (int i = 0; i < allThePlanets.Count; i++)
+            {
+               if(allThePlanets[i].activeInHierarchy)
+                {
+                    if (allThePlanets[i].GetComponent<CircleCollider2D>().radius > Vector2.Distance(allThePlanets[i].gameObject.transform.position, Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position)) && allThePlanets[i].GetComponent<MassController>().IsPlanetViable())
+                    {
+                        Debug.Log(allThePlanets[i].gameObject.name);
+                        selectedPlanet = allThePlanets[i];
+                        coolDownTimer = 0;
+                        break;
+                    }
+                }
+ 
+            }
+
+            if (editMode == false && selectedPlanet != null && coolDownTimer > MAXTIME)
             {
                 tapLocation = Camera.main.ScreenToWorldPoint(new Vector3((Input.GetTouch(0).position.x), (Input.GetTouch(0).position.y), 1));
-                UFO = Instantiate(planet, tapLocation, planet.transform.rotation);
-                ufoRig = UFO.GetComponent<Rigidbody2D>();
-                allThePlanets.Add(UFO); 
+                newPlanet = Instantiate(planet, tapLocation, planet.transform.rotation);
+                newPlanet.GetComponent<MassController>().m_Mass = selectedPlanet.GetComponent<MassController>().HalfPlanet();
+                allThePlanets.Add(newPlanet);
                 editMode = true;
                 tickButtonGameObject.SetActive(true);
                 pauseButtonGameObject.SetActive(false);
@@ -73,29 +121,31 @@ public class PlacePlanet : MonoBehaviour {
             {
                 Destroy(ghostPlanet);
             }
-
-            velocityMode = true;
-            Vector3 location = Camera.main.WorldToScreenPoint(new Vector3(UFO.transform.position.x, UFO.transform.position.y, UFO.transform.position.z));
-            velocityArrow = Instantiate(velocityArrowPreFab, location, velocityArrowPreFab.transform.rotation);
-            velocityArrow.transform.SetParent(canvasMain.transform);
+            if(editMode == true)
+            {
+                velocityMode = true;
+                Vector3 location = Camera.main.WorldToScreenPoint(new Vector3(newPlanet.transform.position.x, newPlanet.transform.position.y, newPlanet.transform.position.z));
+                velocityArrow = Instantiate(velocityArrowPreFab, location, velocityArrowPreFab.transform.rotation);
+                velocityArrow.transform.SetParent(canvasMain.transform);
+            }
         }
         
         ///*************************************************WHAT YOU ARE WORKING ON NOW
 
-        if (Input.touchCount == 1 && velocityMode == true && UFO != null)
+        if (Input.touchCount == 1 && velocityMode == true && newPlanet != null)
         {    
             //Velocity mode On, start
             Vector2 inputWorldPoint = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
-            float angle = Mathf.Atan2(inputWorldPoint.y - UFO.transform.position.y, inputWorldPoint.x - UFO.transform.position.x) * 180 / Mathf.PI; 
+            float angle = Mathf.Atan2(inputWorldPoint.y - newPlanet.transform.position.y, inputWorldPoint.x - newPlanet.transform.position.x) * 180 / Mathf.PI; 
             velocityArrow.transform.eulerAngles = new Vector3(0, 0, angle+90);
-            velocityMeasure = new Vector2(UFO.transform.position.x - inputWorldPoint.x, UFO.transform.position.y - inputWorldPoint.y);
+            velocityMeasure = new Vector2(newPlanet.transform.position.x - inputWorldPoint.x, newPlanet.transform.position.y - inputWorldPoint.y);
             
 
             if(Input.GetTouch(0).phase == TouchPhase.Ended)
             {
                 velocityMode = false;                               //Out of velocity
                 Destroy(velocityArrow);
-                ghostPlanet = Instantiate(planet, UFO.transform.position, planet.transform.rotation);
+                ghostPlanet = Instantiate(planet, newPlanet.transform.position, planet.transform.rotation);
                 ghostPlanet.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
                 
                 ghostPlanet.GetComponent<Rigidbody2D>().velocity = new Vector2(velocityMeasure.x, velocityMeasure.y);
@@ -124,22 +174,42 @@ public class PlacePlanet : MonoBehaviour {
         tickButtonGameObject.SetActive(false);
         pauseButtonGameObject.SetActive(true);
         editMode = false;                               
-        UFO.GetComponent<CircleCollider2D>().enabled = true;
-        UFO.GetComponent<MassController>().enabled = true;
-        UFO.GetComponent<PlanetPause>().SetVelocity(new Vector3(velocityMeasure.x, velocityMeasure.y, 0));
-        UFO = null;
+        newPlanet.GetComponent<CircleCollider2D>().enabled = true;
+        newPlanet.GetComponent<MassController>().enabled = true;
+        newPlanet.GetComponent<PlanetPause>().SetVelocity(new Vector3(velocityMeasure.x, velocityMeasure.y, 0));
+        newPlanet = null;
+        selectedPlanet = null;
         coolDownTimer = 0;
     }
 
     void PauseButtonOnClick()
     {
         isPaused = !isPaused;
+
+        if(isPaused)
+        {
+            pauseButton.image.overrideSprite = pauseButtonSprite;
+        }
+        else
+        {
+            pauseButton.image.overrideSprite = playButtonSprite;
+        }
+
         for(int i = 0; i < allThePlanets.Count; i++)
         {
-            allThePlanets[i].GetComponent<PlanetPause>().isGamePaused = !allThePlanets[i].GetComponent<PlanetPause>().isGamePaused;
+            if (allThePlanets[i].activeInHierarchy)
+            {
+                allThePlanets[i].GetComponent<PlanetPause>().isGamePaused = !allThePlanets[i].GetComponent<PlanetPause>().isGamePaused;
+            }
         }
     }
 
+    void Lose()
+    {
+        Debug.Log("lose");
+        Debug.Log("Total Planets Created: " + allThePlanets.Count);
+        Debug.Log("Also Add Total Mass");
+    }
 
 
 }

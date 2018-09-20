@@ -24,9 +24,10 @@ GameObject:
   - component: {fileID: 58546080244443052}
   - component: {fileID: 114476148028608956}
   - component: {fileID: 114660997881072242}
+  - component: {fileID: 114419599898887798}
   m_Layer: 0
   m_Name: Planet
-  m_TagString: Untagged
+  m_TagString: Planet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -66,7 +67,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1371143041048536}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.481472, y: -7.4488354, z: 0}
+  m_LocalPosition: {x: 3.29856, y: -3.7149231, z: 0}
   m_LocalScale: {x: 1.8754553, y: 1.8754566, z: 1.8754566}
   m_Children:
   - {fileID: 4463156721897576}
@@ -99,7 +100,7 @@ CircleCollider2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1371143041048536}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -108,18 +109,32 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.32
+--- !u!114 &114419599898887798
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1371143041048536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4af149367ed899547802228a1a05647d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114476148028608956
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1371143041048536}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfa100bebf8cb054b8c1a213dbd6c6c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  planetviable: {fileID: 21300000, guid: bfd2eea1fce61c54c9fa58485696cd36, type: 3}
+  planetNotViable: {fileID: 21300000, guid: 2561797d00c683140af9c12361e9e237, type: 3}
   startingMass: 1
+  m_Mass: 1
 --- !u!114 &114660997881072242
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -132,6 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGamePaused: 1
+  m_currentVelocity: {x: 0, y: 0, z: 0}
 --- !u!212 &212431988795006532
 SpriteRenderer:
   m_ObjectHideFlags: 1

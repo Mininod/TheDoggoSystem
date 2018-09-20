@@ -8,7 +8,7 @@ public class PlanetPause : MonoBehaviour {
 
     private bool m_isObjCurrentlyPaused;
 
-    private Vector3 m_currentVelocity;
+    public Vector3 m_currentVelocity;
 
     // Use this for initialization
     void Start () {
@@ -23,7 +23,6 @@ public class PlanetPause : MonoBehaviour {
             {
                 m_currentVelocity = gameObject.GetComponent<Rigidbody2D>().velocity;
                 gameObject.GetComponent<CircleCollider2D>().enabled = false;
-                gameObject.GetComponent<MassController>().enabled = false;
                 m_isObjCurrentlyPaused = true;
             }
             gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
@@ -32,7 +31,6 @@ public class PlanetPause : MonoBehaviour {
         {
             gameObject.GetComponent<Rigidbody2D>().velocity = m_currentVelocity;
             gameObject.GetComponent<CircleCollider2D>().enabled = true;
-            gameObject.GetComponent<MassController>().enabled = true;
             m_isObjCurrentlyPaused = false;
         }
 	}
@@ -41,7 +39,6 @@ public class PlanetPause : MonoBehaviour {
     {
         m_currentVelocity = m_velocity;
         gameObject.GetComponent<CircleCollider2D>().enabled = false;
-        gameObject.GetComponent<MassController>().enabled = false;
 
     }
 }
