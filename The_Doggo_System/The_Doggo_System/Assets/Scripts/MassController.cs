@@ -10,6 +10,7 @@ public class MassController : MonoBehaviour {
     public float startingMass;
     private GameObject sun;
     public float m_Mass;
+    public float m_ToalMass;
     private int m_scaleTime;
     private float m_sunDistanceMultiplier;
 
@@ -30,6 +31,7 @@ public class MassController : MonoBehaviour {
                 m_scaleTime = 10; // hard value
 
                 m_Mass += 0.02f / m_sunDistanceMultiplier;
+                m_ToalMass += 0.02f / m_sunDistanceMultiplier;
 
                 gameObject.transform.localScale = new Vector3(m_Mass / 2, m_Mass / 2, 0);
 

@@ -18,6 +18,7 @@ public class PlanetCollide : MonoBehaviour {
     {
         if(other.gameObject.CompareTag("Sun"))
         {
+            gameObject.GetComponent<MassController>().enabled = false;
             gameObject.SetActive(false);
         }
 
@@ -36,6 +37,7 @@ public class PlanetCollide : MonoBehaviour {
             }
             else
             {
+                gameObject.GetComponent<MassController>().enabled = false;
                 gameObject.SetActive(false);
             }
         }

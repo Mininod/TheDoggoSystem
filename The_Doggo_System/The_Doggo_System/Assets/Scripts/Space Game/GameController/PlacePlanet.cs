@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class PlacePlanet : MonoBehaviour {
@@ -9,6 +10,10 @@ public class PlacePlanet : MonoBehaviour {
 
     public List<GameObject> allThePlanets = new List<GameObject>();
     private int planetsInactive = 0;
+
+    public GameObject scoreTextGameObject;
+    public GameObject planetTextGameObject;
+    public GameObject resetTextGameObject;
 
     public GameObject canvasMain;
     public GameObject planet;
@@ -21,13 +26,15 @@ public class PlacePlanet : MonoBehaviour {
     public Sprite pauseButtonSprite;
     public Sprite playButtonSprite;
 
-    
+    public float score;
+    private bool isThisPlayerALoser = false;
     
     private Vector3 tapLocation;
 
     private GameObject newPlanet;
     private GameObject ghostPlanet;
     public GameObject selectedPlanet;
+    public GameObject sun;
 
     private float distance;
 
@@ -156,6 +163,10 @@ public class PlacePlanet : MonoBehaviour {
            
         }
 
+        if(Input.touchCount == 2 && isThisPlayerALoser == true)
+        {
+            SceneManager.LoadScene("MainScene");
+        }
 
     }
     
@@ -185,7 +196,7 @@ public class PlacePlanet : MonoBehaviour {
     void PauseButtonOnClick()
     {
         isPaused = !isPaused;
-
+        sun.GetComponent<increaseSunGravity>().enabled = !sun.GetComponent<increaseSunGravity>().enabled;
         if(isPaused)
         {
             pauseButton.image.overrideSprite = pauseButtonSprite;
@@ -206,9 +217,20 @@ public class PlacePlanet : MonoBehaviour {
 
     void Lose()
     {
+        for(int i = 0; i < allThePlanets.Count; i++)
+        {
+            score += Mathf.Round(allThePlanets[i].GetComponent<MassController>().m_ToalMass);
+        }
         Debug.Log("lose");
+        Debug.Log("Score: " + score);
         Debug.Log("Total Planets Created: " + allThePlanets.Count);
-        Debug.Log("Also Add Total Mass");
+        planetTextGameObject.GetComponent<Text>().text = "Total Planets: " + allThePlanets.Count;
+        scoreTextGameObject.GetComponent<Text>().text = "Score: " + score;
+        scoreTextGameObject.SetActive(true);
+        planetTextGameObject.SetActive(true);
+        resetTextGameObject.SetActive(true);
+        isThisPlayerALoser = true;
+        score = 0;
     }
 
 
