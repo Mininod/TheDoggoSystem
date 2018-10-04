@@ -35,6 +35,7 @@ public class PlacePlanet : MonoBehaviour {
     private GameObject ghostPlanet;
     public GameObject selectedPlanet;
     public GameObject sun;
+    public GameObject blackhole;
 
     private float distance;
 
@@ -72,6 +73,12 @@ public class PlacePlanet : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         coolDownTimer += 1 * Time.deltaTime;
+
+        if(sun.GetComponent<SunController>().imploded == true)
+        {
+            //Choose random New mode
+            blackhole.SetActive(true);
+        }
 
         for (int i = 0; i < allThePlanets.Count; i++)
         {
@@ -163,6 +170,8 @@ public class PlacePlanet : MonoBehaviour {
            
         }
 
+       
+
         if(Input.touchCount == 2 && isThisPlayerALoser == true)
         {
             SceneManager.LoadScene("MainScene");
@@ -196,7 +205,7 @@ public class PlacePlanet : MonoBehaviour {
     void PauseButtonOnClick()
     {
         isPaused = !isPaused;
-        sun.GetComponent<increaseSunGravity>().enabled = !sun.GetComponent<increaseSunGravity>().enabled;
+        sun.GetComponent<SunController>().enabled = !sun.GetComponent<SunController>().enabled;
         if(isPaused)
         {
             pauseButton.image.overrideSprite = pauseButtonSprite;

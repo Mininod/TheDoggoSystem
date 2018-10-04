@@ -8,7 +8,7 @@ public class MassController : MonoBehaviour {
     public Sprite planetNotViable;
 
     public float startingMass;
-    private GameObject sun;
+    private GameObject centreOfGavity;
     public float m_Mass;
     public float m_ToalMass;
     private int m_scaleTime;
@@ -17,15 +17,27 @@ public class MassController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         gameObject.transform.localScale = new Vector3(startingMass, startingMass, 1);
-        sun = GameObject.Find("Sun");
-	}
+
+        if (GameObject.Find("Sun"))
+        {
+            centreOfGavity = GameObject.Find("Sun");
+        }
+        else if (GameObject.Find("Blackhole"))
+        {
+            centreOfGavity = GameObject.Find("Blackhole");
+        }
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
         if (!GetComponent<PlanetPause>().isGamePaused)
         {
-            m_sunDistanceMultiplier = Vector2.Distance(gameObject.transform.position, sun.transform.position) / 2;
-
+            if(centreOfGavity != null)
+            {
+                m_sunDistanceMultiplier = Vector2.Distance(gameObject.transform.position, centreOfGavity.transform.position) / 2;
+            }
+            
             if (m_scaleTime <= 0)
             {
                 m_scaleTime = 10; // hard value
